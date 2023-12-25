@@ -62,9 +62,18 @@ const fetchMovieDetails = async (id) => {
     const response = await fetch(
       `https://api.themoviedb.org/3/movie/${id}?api_key=${apiKey}&language=en-US`
     );
+    const similarResponse = await fetch(
+      `https://api.themoviedb.org/3/movie/${id}/similar?api_key=${apiKey}&language=en-US&page=1`
+    );
     const data = await response.json();
+    const similarData = await similarResponse.json();
 
-    details.innerHTML = `<div><h1>${data.original_title}</h1><p>${data.overview}</p></div`;
+    details.innerHTML = `<div><h1>${data.original_title}</h1><p>${
+      data.overview
+    }</p><h1>Similar Movies</h1>${similarData.results.map(
+      ({ id, backdrop_path, original_title }) =>
+        moviesTemplate(id, backdrop_path, original_title)
+    )}</div`;
   } catch (error) {
     console.log(error.message);
   }

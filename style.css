@@ -9,6 +9,6 @@
 
 #details-box {
     background-color: antiquewhite;
-    width: 20em;
-    height: 20em;
+    width: fit-content;
+    height: 90%;
 }
