@@ -26,8 +26,8 @@ const fetchUpComingMovies = async () => {
     const data = await response.json();
 
     container.innerHTML = `
-    <div>
-      <h1>Upcoming Movies<h1>
+    <div class=movies-page>
+      <h1 class=page-title>Upcoming Movies<h1>
       <div class=movies>
          ${data.results
            .map(({ id, backdrop_path, original_title }) =>
@@ -49,8 +49,8 @@ const fetchSearchMovie = async (name) => {
     );
     const data = await response.json();
     container.innerHTML = `
-    <div>
-      <h1>You searched for ${name}<h1>
+    <div class=movies-page>
+      <h1 class=page-title>You searched for ${name}<h1>
       <div class=movies>
         ${data.results
           .map(({ id, backdrop_path, original_title }) =>
@@ -73,15 +73,22 @@ const fetchMovieDetails = async (id) => {
     const similarResponse = await fetch(
       `https://api.themoviedb.org/3/movie/${id}/similar?api_key=${apiKey}&language=en-US&page=1`
     );
-    const data = await response.json();
+    const { backdrop_path, genres, original_title, release_date, overview } =
+      await response.json();
     const similarData = await similarResponse.json();
 
     container.innerHTML = `
-      <div>
-      <img src=${webLink}${data.backdrop_path}>
-        <h1>${data.original_title}</h1>
-        <p>${data.overview}</p>
-        <h1>Similar Movies</h1>
+      <div class=movie-details-tab>
+        <div class=movie-details>
+          <img src=${webLink}${backdrop_path} class=movie-details-poster>
+          <span>
+            <p>${genres.map(({ name }) => name).join(" - ")}</p>
+            <h1>${original_title}</h1>
+            <p>Release Date: ${release_date}</p>
+            <p style=font-weight:bold>Overview: <br><span style=font-weight: normal>${overview}</span></p>
+          </span>
+        </div>
+        <h1 class=page-title>You may also like</h1>
         <div class=movies>
           ${similarData.results
             .map(({ id, backdrop_path, original_title }) =>
