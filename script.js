@@ -1,5 +1,4 @@
 const container = document.getElementById("container");
-const popup = document.getElementById("popup");
 const form = document.getElementById("form");
 const details = document.getElementById("details");
 
@@ -12,17 +11,11 @@ form.addEventListener("submit", (e) => {
   fetchSearchMovie(value);
 });
 
-const showDetails = (id) => {
-  document.getElementById("details-container").style.display = "flex";
-  fetchMovieDetails(id);
-};
-
-const closeDetails = () => {
-  document.getElementById("details-container").style.display = "none";
-};
-
 const moviesTemplate = (id, backdrop_path, original_title) => {
-  return `<button onclick="showDetails(${id})"><img src=${webLink}${backdrop_path}><span>${original_title}</span></button>`;
+  return `<button ondblclick="fetchMovieDetails(${id})" class=movies-btn>
+            <img class=movie-poster src=${webLink}${backdrop_path}>
+            <span>${original_title}</span>
+          </button>`;
 };
 
 const fetchUpComingMovies = async () => {
@@ -32,11 +25,18 @@ const fetchUpComingMovies = async () => {
     );
     const data = await response.json();
 
-    container.innerHTML = data.results
-      .map(({ id, backdrop_path, original_title }) =>
-        moviesTemplate(id, backdrop_path, original_title)
-      )
-      .join("");
+    container.innerHTML = `
+    <div>
+      <h1>Upcoming Movies<h1>
+      <div class=movies>
+         ${data.results
+           .map(({ id, backdrop_path, original_title }) =>
+             moviesTemplate(id, backdrop_path, original_title)
+           )
+           .join("")}
+      </div>
+   
+    </div>`;
   } catch (error) {
     console.log(error.message);
   }
@@ -48,10 +48,18 @@ const fetchSearchMovie = async (name) => {
       `https://api.themoviedb.org/3/search/movie?api_key=${apiKey}&query=${name}`
     );
     const data = await response.json();
-    container.innerHTML = data.results.map(
-      ({ id, backdrop_path, original_title }) =>
-        moviesTemplate(id, backdrop_path, original_title)
-    );
+    container.innerHTML = `
+    <div>
+      <h1>You searched for ${name}<h1>
+      <div class=movies>
+        ${data.results
+          .map(({ id, backdrop_path, original_title }) =>
+            moviesTemplate(id, backdrop_path, original_title)
+          )
+          .join("")}
+      </div>
+
+    </div>`;
   } catch (error) {
     console.log(error.message);
   }
@@ -68,12 +76,20 @@ const fetchMovieDetails = async (id) => {
     const data = await response.json();
     const similarData = await similarResponse.json();
 
-    details.innerHTML = `<div><h1>${data.original_title}</h1><p>${
-      data.overview
-    }</p><h1>Similar Movies</h1>${similarData.results.map(
-      ({ id, backdrop_path, original_title }) =>
-        moviesTemplate(id, backdrop_path, original_title)
-    )}</div`;
+    container.innerHTML = `
+      <div>
+      <img src=${webLink}${data.backdrop_path}>
+        <h1>${data.original_title}</h1>
+        <p>${data.overview}</p>
+        <h1>Similar Movies</h1>
+        <div class=movies>
+          ${similarData.results
+            .map(({ id, backdrop_path, original_title }) =>
+              moviesTemplate(id, backdrop_path, original_title)
+            )
+            .join("")}
+        </div>
+      </div>`;
   } catch (error) {
     console.log(error.message);
   }

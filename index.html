@@ -8,20 +8,16 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <div id="details-container">
-      <div id="details-box">
-        <button onclick="closeDetails()">X</button>
-        <div id="details"></div>
+    <header>
+      <div>
+        <label onclick="fetchUpComingMovies()">Movies</label>
+        <form id="form">
+          <h1>Search Movies</h1>
+          <input id="searchValue" type="text" />
+          <button type="submit">Search</button>
+        </form>
       </div>
-    </div>
-    <header><label>Movies</label></header>
-    <section>
-      <h1>Search Movies</h1>
-      <form id="form">
-        <input id="searchValue" type="text" />
-        <button type="submit">Search</button>
-      </form>
-    </section>
+    </header>
     <section>
       <div id="container"></div>
     </section>
