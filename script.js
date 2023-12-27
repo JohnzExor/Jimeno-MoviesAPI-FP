@@ -5,6 +5,16 @@ const searchValue = document.getElementById("searchValue");
 
 const apiKey = "190459cb7522c147260473041d9226ca";
 const webLink = "http://image.tmdb.org/t/p/w500/";
+let pageIndex = 1;
+let maxPageIndex = null;
+
+const nextPage = () => {
+  if (pageIndex < maxPageIndex) fetchUpComingMovies((pageIndex += 1));
+};
+
+const backPage = () => {
+  if (pageIndex > 1) fetchUpComingMovies((pageIndex -= 1));
+};
 
 form.addEventListener("submit", (e) => {
   e.preventDefault();
@@ -36,13 +46,13 @@ const movieDetailsTemplate = (
           </div>`;
 };
 
-const fetchUpComingMovies = async () => {
+const fetchUpComingMovies = async (index) => {
   try {
     const response = await fetch(
-      `https://api.themoviedb.org/3/movie/upcoming?api_key=${apiKey}&language=en-US&page=1`
+      `https://api.themoviedb.org/3/movie/upcoming?api_key=${apiKey}&language=en-US&page=${index}`
     );
-    const { results } = await response.json();
-
+    const { results, page, total_pages } = await response.json();
+    maxPageIndex = total_pages;
     container.innerHTML = `
     <div class=movies-page>
       <h1 class=page-title>Upcoming Movies<h1>
@@ -52,6 +62,11 @@ const fetchUpComingMovies = async () => {
              moviesTemplate(id, backdrop_path, original_title)
            )
            .join("")}
+      </div>
+      <div class=page-buttons>
+          <button onclick=backPage() class=interactable>Back</button>
+          <span>Page ${page} out of ${total_pages}</span>
+          <button onclick=nextPage() class=interactable>Next</button>
       </div>
     </div>`;
   } catch (error) {
@@ -116,4 +131,4 @@ const fetchMovieDetails = async (id) => {
   }
 };
 
-fetchUpComingMovies();
+fetchUpComingMovies(pageIndex);
