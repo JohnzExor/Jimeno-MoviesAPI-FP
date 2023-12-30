@@ -84,19 +84,31 @@ header label {
     padding: 2em;
 }
 
-
+.small-img{
+    width: 30%;
+}
+.collection {
+    display: flex;
+    flex-direction: column;
+}
 .movie-details {
     display: flex;
     align-items: start;
     gap:3em;
 }
 
-.movie-details span {
+.movie-details-text {
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+}
+
+.movie-details div {
     width: 100%;
     max-width: 30em;
 }
 
-.movie-details span h1 {
+.movie-details div h1 {
     font-size: 40px;
     font-weight: bold;
 }

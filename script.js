@@ -21,28 +21,42 @@ form.addEventListener("submit", (e) => {
   fetchSearchMovie(searchValue.value);
 });
 
-const moviesTemplate = (id, backdrop_path, original_title) => {
+const moviesTemplate = (id, poster_path, original_title) => {
   return `<button ondblclick="fetchMovieDetails(${id})" class=movies-btn>
-            <img class=movie-poster src=${webLink}${backdrop_path}>
+            <img class=movie-poster src=${webLink}${poster_path}>
             <span>${original_title}</span>
           </button>`;
 };
 
 const movieDetailsTemplate = (
-  backdrop_path,
+  poster_path,
   genres,
   original_title,
   release_date,
-  overview
+  overview,
+  popularity,
+  belongs_to_collection
 ) => {
   return `<div class=movie-details>
-            <img src=${webLink}${backdrop_path} class=movie-details-poster>
-            <span>
+            <img src=${webLink}${poster_path} class=movie-details-poster>
+            <div class=movie-details-text>
               <p>${genres.map(({ name }) => name).join(" - ")}</p>
+              <p>Popularity: ${popularity}</p>
               <h1>${original_title}</h1>
               <p>Release Date: ${release_date}</p>
               <p style=font-weight:bold>Overview: <br><span style=font-weight: normal>${overview}</span></p>
-            </span>
+              <p style=font-weight:bold>Belongs to the collection:</p>
+              ${
+                belongs_to_collection
+                  ? `<div class=collection>
+                      <img class=small-img src=${webLink}${belongs_to_collection.poster_path}> 
+                      <span>${belongs_to_collection.name}</span>
+                    </div>
+                  `
+                  : null
+              }
+                  
+            </div>
           </div>`;
 };
 
@@ -58,8 +72,8 @@ const fetchUpComingMovies = async (index) => {
       <h1 class=page-title>Upcoming Movies<h1>
       <div class=movies>
          ${results
-           .map(({ id, backdrop_path, original_title }) =>
-             moviesTemplate(id, backdrop_path, original_title)
+           .map(({ id, poster_path, original_title }) =>
+             moviesTemplate(id, poster_path, original_title)
            )
            .join("")}
       </div>
@@ -85,8 +99,8 @@ const fetchSearchMovie = async (name) => {
       <h1 class=page-title>You searched for ${name}<h1>
       <div class=movies>
         ${results
-          .map(({ id, backdrop_path, original_title }) =>
-            moviesTemplate(id, backdrop_path, original_title)
+          .map(({ id, poster_path, original_title }) =>
+            moviesTemplate(id, poster_path, original_title)
           )
           .join("")}
       </div>
@@ -104,24 +118,33 @@ const fetchMovieDetails = async (id) => {
     const similarResponse = await fetch(
       `https://api.themoviedb.org/3/movie/${id}/similar?api_key=${apiKey}&language=en-US&page=1`
     );
-    const { backdrop_path, genres, original_title, release_date, overview } =
-      await response.json();
-    const similarData = await similarResponse.json();
+    const {
+      poster_path,
+      genres,
+      original_title,
+      release_date,
+      overview,
+      popularity,
+      belongs_to_collection,
+    } = await response.json();
+    const { results } = await similarResponse.json();
 
     container.innerHTML = `
       <div class=movies-page>
       ${movieDetailsTemplate(
-        backdrop_path,
+        poster_path,
         genres,
         original_title,
         release_date,
-        overview
+        overview,
+        popularity,
+        belongs_to_collection
       )}
         <h1 class=page-title>You may also like</h1>
         <div class=movies>
-          ${similarData.results
-            .map(({ id, backdrop_path, original_title }) =>
-              moviesTemplate(id, backdrop_path, original_title)
+          ${results
+            .map(({ id, poster_path, original_title }) =>
+              moviesTemplate(id, poster_path, original_title)
             )
             .join("")}
         </div>
