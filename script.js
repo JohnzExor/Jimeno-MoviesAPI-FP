@@ -55,7 +55,6 @@ const movieDetailsTemplate = (
                   `
                   : null
               }
-                  
             </div>
           </div>`;
 };
@@ -110,15 +109,13 @@ const fetchSearchMovie = async (name) => {
   }
 };
 
-const fetchMovieDetails = async (id) => {
+const fetchMovieDetails = async (movieID) => {
   try {
     const response = await fetch(
-      `https://api.themoviedb.org/3/movie/${id}?api_key=${apiKey}&language=en-US`
-    );
-    const similarResponse = await fetch(
-      `https://api.themoviedb.org/3/movie/${id}/similar?api_key=${apiKey}&language=en-US&page=1`
+      `https://api.themoviedb.org/3/movie/${movieID}?api_key=${apiKey}&language=en-US`
     );
     const {
+      id,
       poster_path,
       genres,
       original_title,
@@ -127,7 +124,6 @@ const fetchMovieDetails = async (id) => {
       popularity,
       belongs_to_collection,
     } = await response.json();
-    const { results } = await similarResponse.json();
 
     container.innerHTML = `
       <div class=movies-page>
@@ -142,16 +138,25 @@ const fetchMovieDetails = async (id) => {
       )}
         <h1 class=page-title>You may also like</h1>
         <div class=movies>
-          ${results
-            .map(({ id, poster_path, original_title }) =>
-              moviesTemplate(id, poster_path, original_title)
-            )
-            .join("")}
+          ${await fetchSimilarMovies(id)}
         </div>
       </div>`;
   } catch (error) {
     console.log(error.message);
   }
+};
+
+const fetchSimilarMovies = async (id) => {
+  const response = await fetch(
+    `https://api.themoviedb.org/3/movie/${id}/similar?api_key=${apiKey}&language=en-US&page=1`
+  );
+  const { results } = await response.json();
+
+  return results
+    .map(({ id, poster_path, original_title }) =>
+      moviesTemplate(id, poster_path, original_title)
+    )
+    .join("");
 };
 
 fetchUpComingMovies(pageIndex);
